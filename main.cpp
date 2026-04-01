@@ -108,7 +108,38 @@ bool isValidInfix(const vector<Token>& tokens) {
 
 vector<Token> infixToPostfix(const vector<Token>& tokens) {
     vector<Token> output;
-    // TODO
+    ArrayStack<Token> opStack;
+
+    for (const auto& t : tokens) {
+        const string& v = t.value;
+
+        if (!isOperator(v) && v != "(" && v != ")") {
+            output.push_back(t);
+        } else if (v == "(") {
+            opStack.push(t);
+        } else if (v == ")") {
+            while (!opStack.empty() && opStack.top().value != "(") {
+                output.push_back(opStack.top());
+                opStack.pop();
+            }
+            opStack.pop(); // discard "("
+        } else {
+            // operator: pop higher or equal precedence operators (left-associative)
+            while (!opStack.empty() &&
+                   isOperator(opStack.top().value) &&
+                   precedence(opStack.top().value) >= precedence(v)) {
+                output.push_back(opStack.top());
+                opStack.pop();
+            }
+            opStack.push(t);
+        }
+    }
+
+    while (!opStack.empty()) {
+        output.push_back(opStack.top());
+        opStack.pop();
+    }
+
     return output;
 }
 
