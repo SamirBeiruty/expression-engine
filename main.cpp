@@ -1,20 +1,15 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <unordered_map>
 #include <cctype>
 
 #include "ArrayStack.h"
 
 using namespace std;
 
-// Token
-
 struct Token {
-    string value;   // number, operator, or parenthesis
+    string value;
 };
-
-// Tokenizer
 
 vector<Token> tokenize(const string& line) {
     vector<Token> tokens;
@@ -41,8 +36,6 @@ vector<Token> tokenize(const string& line) {
     return tokens;
 }
 
-// Helpers
-
 bool isOperator(const string& s) {
     return s == "+" || s == "-" || s == "*" || s == "/";
 }
@@ -52,8 +45,6 @@ int precedence(const string& op) {
     if (op == "+" || op == "-") return 1;
     return 0;
 }
-
-// Detection
 
 bool isValidPostfix(const vector<Token>& tokens) {
     if (tokens.empty()) return false;
@@ -74,7 +65,6 @@ bool isValidInfix(const vector<Token>& tokens) {
     if (tokens.empty()) return false;
 
     int parenDepth = 0;
-    // "start", "number", "operator", "lparen", "rparen"
     string prev = "start";
 
     for (const auto& t : tokens) {
@@ -93,7 +83,6 @@ bool isValidInfix(const vector<Token>& tokens) {
             if (prev == "operator" || prev == "lparen" || prev == "start") return false;
             prev = "operator";
         } else {
-            // number
             if (prev == "number" || prev == "rparen") return false;
             prev = "number";
         }
@@ -103,8 +92,6 @@ bool isValidInfix(const vector<Token>& tokens) {
     if (prev != "number" && prev != "rparen") return false;
     return true;
 }
-
-// Conversion
 
 vector<Token> infixToPostfix(const vector<Token>& tokens) {
     vector<Token> output;
@@ -122,9 +109,8 @@ vector<Token> infixToPostfix(const vector<Token>& tokens) {
                 output.push_back(opStack.top());
                 opStack.pop();
             }
-            opStack.pop(); // discard "("
+            opStack.pop();
         } else {
-            // operator: pop higher or equal precedence operators (left-associative)
             while (!opStack.empty() &&
                    isOperator(opStack.top().value) &&
                    precedence(opStack.top().value) >= precedence(v)) {
@@ -143,8 +129,6 @@ vector<Token> infixToPostfix(const vector<Token>& tokens) {
     return output;
 }
 
-// Evaluation
-
 double evalPostfix(const vector<Token>& tokens) {
     ArrayStack<double> stack;
     for (const auto& t : tokens) {
@@ -162,8 +146,6 @@ double evalPostfix(const vector<Token>& tokens) {
     return stack.top();
 }
 
-// Main
-
 int main() {
     string line;
     getline(cin, line);
@@ -178,8 +160,9 @@ int main() {
         vector<Token> postfix = infixToPostfix(tokens);
         cout << "FORMAT: INFIX\n";
         cout << "POSTFIX: ";
-        for (const auto& t : postfix) {
-            cout << t.value << " ";
+        for (int i = 0; i < (int)postfix.size(); i++) {
+            if (i > 0) cout << " ";
+            cout << postfix[i].value;
         }
         cout << "\n";
         cout << "RESULT: " << evalPostfix(postfix) << "\n";
