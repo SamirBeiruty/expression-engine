@@ -11,26 +11,25 @@ private:
 
 public:
     void push(const T& value) {
-        // TODO
+        data.push_back(value);
     }
 
     void pop() {
-        // TODO
+        if (data.empty()) throw std::runtime_error("pop on empty stack");
+        data.pop_back();
     }
 
     T top() const {
-        // TODO
-        return T();
+        if (data.empty()) throw std::runtime_error("top on empty stack");
+        return data.back();
     }
 
     bool empty() const {
-        // TODO
-        return true;
+        return data.empty();
     }
 
     int size() const {
-        // TODO
-        return 0;
+        return static_cast<int>(data.size());
     }
 };
 
