@@ -71,8 +71,37 @@ bool isValidPostfix(const vector<Token>& tokens) {
 }
 
 bool isValidInfix(const vector<Token>& tokens) {
-    // TODO
-    return false;
+    if (tokens.empty()) return false;
+
+    int parenDepth = 0;
+    // "start", "number", "operator", "lparen", "rparen"
+    string prev = "start";
+
+    for (const auto& t : tokens) {
+        const string& v = t.value;
+
+        if (v == "(") {
+            if (prev == "number" || prev == "rparen") return false;
+            parenDepth++;
+            prev = "lparen";
+        } else if (v == ")") {
+            if (prev == "operator" || prev == "lparen" || prev == "start") return false;
+            parenDepth--;
+            if (parenDepth < 0) return false;
+            prev = "rparen";
+        } else if (isOperator(v)) {
+            if (prev == "operator" || prev == "lparen" || prev == "start") return false;
+            prev = "operator";
+        } else {
+            // number
+            if (prev == "number" || prev == "rparen") return false;
+            prev = "number";
+        }
+    }
+
+    if (parenDepth != 0) return false;
+    if (prev != "number" && prev != "rparen") return false;
+    return true;
 }
 
 // Conversion
